@@ -75,8 +75,6 @@ app.use((req, res, next) => {
       requestBody
     )}, Response Status Code: ${responseStatusCode}, Response Body: ${responseBody}`;
     logStream.write(`${logMessage}\n`);
-
-    // Restore original functions
     res.write = oldWrite;
     res.end = oldEnd;
 
@@ -95,7 +93,7 @@ const asianCountryCodes = [
   { country: 'Brunei', code: '+673' },
   { country: 'Cambodia', code: '+855' },
   { country: 'China', code: '+86' },
-  { country: 'Cyprus', code: '+357' }, // Partially in Asia
+  { country: 'Cyprus', code: '+357' },
   { country: 'Georgia', code: '+995' },
   { country: 'India', code: '+91' },
   { country: 'Indonesia', code: '+62' },
@@ -104,7 +102,7 @@ const asianCountryCodes = [
   { country: 'Israel', code: '+972' },
   { country: 'Japan', code: '+81' },
   { country: 'Jordan', code: '+962' },
-  { country: 'Kazakhstan', code: '+7' }, // Partially in Asia
+  { country: 'Kazakhstan', code: '+7' },
   { country: 'Kuwait', code: '+965' },
   { country: 'Kyrgyzstan', code: '+996' },
   { country: 'Laos', code: '+856' },
@@ -137,9 +135,6 @@ const asianCountryCodes = [
   { country: 'Yemen', code: '+967' },
 ];
 
-
-// Load countries data
-
 let countriesData = [];
 fs.readFile(countriesFilePath, 'utf8', (err, data) => {
   if (!err) {
@@ -153,15 +148,13 @@ fs.readFile(countriesFilePath, 'utf8', (err, data) => {
   }
 });
 
-// Load districts data
 let districtsData = [];
 fs.readFile(districtsFilePath, 'utf8', (err, data) => {
   if (!err) {
     try {
-      
       districtsData = JSON.parse(data);
-      
-      startServer(); // Start the server once districts data is loaded
+
+      startServer();
     } catch (parseError) {
       console.error('Error parsing districts data:', parseError);
     }
@@ -170,9 +163,7 @@ fs.readFile(districtsFilePath, 'utf8', (err, data) => {
   }
 });
 
-// Function to start the server
 function startServer() {
-  // Route to get list of districts for a state
   app.post('/countries/states/districts', (req, res) => {
     const stateName = req.body.state;
     const state = districtsData.states.find(
@@ -185,19 +176,16 @@ function startServer() {
     }
   });
 
-  // Route to get list of country codes
   app.get('/countrycodes', (req, res) => {
     const countryCodes = asianCountryCodes.map((country) => country.code);
     res.json(countryCodes);
   });
 
-  // Route to get list of countries
   app.get('/countries', (req, res) => {
     const countryNames = countriesData.map((country) => country.name);
     res.json({ countries: countryNames });
   });
 
-  // Route to get list of states for a country
   app.post('/countries/states', (req, res) => {
     const countryName = req.body.country;
     const country = countriesData.find(
@@ -210,7 +198,6 @@ function startServer() {
     }
   });
 
-  // Start the server
   app.listen(port, () => {
     console.log(`Server is listening at http://localhost:${port}`);
   });
